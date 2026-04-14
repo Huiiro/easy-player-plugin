@@ -1,0 +1,11 @@
+{
+  "id": "",
+  "name": "",
+  "desc": "",
+  "type": "dsp",
+  "version": "1.0",
+  "entry": "dsp.json",
+  "settings": "settings.vue",
+  "author": "",
+  "enabled": true
+}

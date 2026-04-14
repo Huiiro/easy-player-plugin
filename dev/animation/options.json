@@ -1,0 +1,55 @@
+{
+  "options": {
+    "mode": 3,
+    "bgAlpha": 0,
+    "fillAlpha": 1,
+    "barSpace": 0.1,
+    "smoothing": 0.5,
+    "reflexRatio": 0,
+    "overlay": true,
+    "showScaleX": false,
+    "showScaleY": false,
+    "alphaBars": false,
+    "ledBars": false,
+    "outlineBars": false,
+    "showBgColor": false,
+    "gradient": "playerGradient",
+    "shadowBlur": 15,
+    "shadowColor": "#a0c8f0",
+    "showPeaks": false
+  },
+  "name": "custom",
+  "useCustomGradient": true,
+  "gradientName": "playerGradient",
+  "gradientOptions": {
+    "dir": "v",
+    "colorStops": [
+      {
+      "color": "rgba(180,220,255,0.2)",
+      "level": 0.05
+      },
+      {
+        "color": "rgba(160,200,240,0.6)",
+        "level": 0.35
+      },
+      {
+        "color": "rgba(220,150,200,0.6)",
+        "level": 0.65
+      },
+      {
+        "color": "rgba(255,230,255,0.9)",
+        "level": 1
+      }
+    ]
+  },
+  "selectOption": "custom",
+  "selectOption_alt": "playback_animation_selection_custom",
+  "i18nOptions": {
+    "zh": {
+      "playback_animation_selection_custom": "自定义"
+    },
+    "en": {
+      "playback_animation_selection_custom": "custom"
+    }
+  }
+}
