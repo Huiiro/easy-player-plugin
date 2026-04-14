@@ -1,0 +1,10 @@
+{
+  "id": "fonts-formula1-regular",
+  "name": "F1 fonts",
+  "desc": "F1 style fonts",
+  "type": "font",
+  "version": "1.0",
+  "entry": "fontFile.ttf",
+  "author": "h",
+  "enabled": true
+}

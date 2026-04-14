@@ -1,0 +1,10 @@
+{
+  "id": "cute-fonts",
+  "name": "cute fonts",
+  "desc": "",
+  "type": "font",
+  "version": "1.0",
+  "entry": "cute.woff2",
+  "author": "h",
+  "enabled": true
+}

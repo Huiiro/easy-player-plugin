@@ -1,0 +1,18 @@
+{
+    "options": {
+    "name": "Aurora",
+    "key": "aurora",
+    "label": "dynamic_bg_selection_custom",
+    "img": "./preview.png",
+    "dark": true,
+    "customFooterStyle": "background: linear-gradient(90deg,#0f2027,#203a43,#2c5364)",
+    "i18nOptions": {
+      "zh": {
+        "dynamic_bg_selection_custom": "极光"
+      },
+      "en": {
+        "dynamic_bg_selection_custom": "Aurora"
+      }
+    }
+  }
+}

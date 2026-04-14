@@ -1,0 +1,11 @@
+{
+  "id": "aurora-bg-01",
+  "name": "aurora1",
+  "desc": "aurora background 1",
+  "type": "dynamicBg",
+  "version": "1.0",
+  "entry": "index.vue",
+  "options": "options.json",
+  "author": "huiiro",
+  "enabled": true
+}

@@ -1,0 +1,10 @@
+{
+  "id": "sakura-animation-f1gb",
+  "name": "sakura",
+  "desc": "sakura animation",
+  "type": "animation",
+  "version": "1.0",
+  "entry": "options.json",
+  "author": "huiiro",
+  "enabled": false
+}

@@ -1,0 +1,11 @@
+{
+  "id": "0537b180-5765-45e5-92b9-7405a45b655d",
+  "name": "tremolo-dsp",
+  "desc": "tremolo-dsp",
+  "type": "dsp",
+  "version": "1.0",
+  "entry": "dsp.js",
+  "settings": "settings.vue",
+  "author": "huiiro",
+  "enabled": false
+}
