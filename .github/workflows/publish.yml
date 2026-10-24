@@ -1,0 +1,40 @@
+name: Publish official source plugins
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: official-plugins-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      # Deliberately do not install the desktop application's dependencies.
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - name: Verify reproducible plugin catalog
+        run: git diff --exit-code -- catalog.json
+      - run: npm test
+      - name: Publish to the official repository
+        env:
+          GH_TOKEN: ${{ secrets.PLUGIN_RELEASE_TOKEN || github.token }}
+        shell: bash
+        run: |
+          repo=$(node -p "require('./distribution.json').repository")
+          tag=$(node -p "require('./distribution.json').releaseTag")
+          if ! gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
+            gh release create "$tag" --repo "$repo" --title 'Official source plugins' --notes 'Optional source plugins for Easy Player. Install them from Settings → Plugins.' --latest=false
+          fi
+          gh release upload "$tag" --repo "$repo" dist/*.epp --clobber
+          gh release upload "$tag" --repo "$repo" dist/catalog.json --clobber
