@@ -1,4 +1,5 @@
 import { defineSourcePlugin } from '@easy-player/plugin-sdk'
+import { officialPluginAuthor } from '../../shared/officialPluginAuthor'
 import { searchQQMusicTracks, getQQMusicTrack, searchQQMusicArtwork } from './metadata'
 import { searchQQMusicLyrics, getQQMusicLyrics } from './lyrics'
 
@@ -12,5 +13,6 @@ export const qqmusicPlugin = defineSourcePlugin(
     metadata: { search: searchQQMusicTracks, get: getQQMusicTrack },
     artwork: { search: searchQQMusicArtwork }
   }),
-  '1.1.0'
+  '1.1.1',
+  officialPluginAuthor
 )

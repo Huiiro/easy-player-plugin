@@ -10,7 +10,7 @@
     "build:examples": "node scripts/build-theme-examples.mjs"
   },
   "dependencies": {
-    "@easy-player/plugin-sdk": "file:vendor/easy-player-plugin-sdk-2.0.0.tgz",
+    "@easy-player/plugin-sdk": "file:vendor/easy-player-plugin-sdk-2.1.0.tgz",
     "@neteasecloudmusicapienhanced/api": "^4.29.17",
     "kugoumusicapi": "github:MakcRe/KuGouMusicApi",
     "qrc-decoder": "1.0.2"

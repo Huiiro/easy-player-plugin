@@ -87,8 +87,8 @@ const context = (operation) => ({
   signal: new AbortController().signal
 })
 test('all five independently bundled archives activate against only the public SDK', () => {
-  assert.equal(catalog.plugins.filter(entry => entry.kind !== 'theme').length, 5)
-  for (const entry of catalog.plugins.filter(entry => entry.kind !== 'theme')) {
+  assert.equal(catalog.plugins.filter((entry) => entry.kind !== 'theme').length, 5)
+  for (const entry of catalog.plugins.filter((entry) => entry.kind !== 'theme')) {
     const filename = new URL(entry.url).pathname.split('/').at(-1)
     const bytes = readFileSync(path.join(root, 'dist', filename))
     assert.equal(bytes.length, entry.size)
@@ -97,7 +97,10 @@ test('all five independently bundled archives activate against only the public S
     assert.deepEqual(
       JSON.parse(zip.readAsText('manifest.json')),
       Object.fromEntries(
-        ['id', 'displayName', 'version', 'apiVersion', 'sources'].map((key) => [key, entry[key]])
+        ['id', 'displayName', 'author', 'version', 'apiVersion', 'sources'].map((key) => [
+          key,
+          entry[key]
+        ])
       )
     )
     const module = { exports: {} }
@@ -108,6 +111,11 @@ test('all five independently bundled archives activate against only the public S
     )
     const plugin = module.exports.createPlugin()
     assert.equal(plugin.manifest.apiVersion, 2)
+    assert.deepEqual(entry.author, {
+      name: 'Easy Player',
+      url: 'https://github.com/Huiiro/easy-player-plugin'
+    })
+    assert.deepEqual(plugin.manifest.author, entry.author, 'runtime and archive authors must match')
     plugin.activate(host)
   }
   assert.equal(sources.size, 5)

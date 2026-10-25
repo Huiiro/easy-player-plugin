@@ -1,4 +1,5 @@
 import { defineSourcePlugin } from '@easy-player/plugin-sdk'
+import { officialPluginAuthor } from '../../shared/officialPluginAuthor'
 import { searchNeteaseTracks, getNeteaseTrack } from './metadata'
 import { searchNeteaseLyrics, getNeteaseLyrics } from './lyrics'
 import { searchNeteaseArtwork } from './artwork'
@@ -17,5 +18,6 @@ export const neteasePlugin = defineSourcePlugin(
     metadata: { search: searchNeteaseTracks, get: getNeteaseTrack },
     artwork: { search: searchNeteaseArtwork }
   }),
-  '1.1.0'
+  '1.1.1',
+  officialPluginAuthor
 )

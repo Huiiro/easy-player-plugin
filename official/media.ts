@@ -1,4 +1,5 @@
 import { defineSourcePlugin } from '@easy-player/plugin-sdk'
+import { officialPluginAuthor } from '../shared/officialPluginAuthor'
 import { biliSource, youtubeSource } from './media/adapter'
 
 export const biliPlugin = defineSourcePlugin(
@@ -9,7 +10,8 @@ export const biliPlugin = defineSourcePlugin(
     downloadDomains: ['bilibili.com']
   },
   () => biliSource,
-  '1.1.0'
+  '1.1.1',
+  officialPluginAuthor
 )
 export const youtubePlugin = defineSourcePlugin(
   {
@@ -19,5 +21,6 @@ export const youtubePlugin = defineSourcePlugin(
     downloadDomains: ['youtube.com', 'youtu.be', 'youtube-nocookie.com']
   },
   () => youtubeSource,
-  '1.1.0'
+  '1.1.1',
+  officialPluginAuthor
 )
