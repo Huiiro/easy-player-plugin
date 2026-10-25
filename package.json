@@ -5,7 +5,9 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "npm run typecheck && node scripts/build.mjs",
-    "test": "node --test tests/*.mjs"
+    "test": "node --test tests/*.mjs",
+    "pack:theme": "node scripts/pack-theme.mjs",
+    "build:examples": "node scripts/build-theme-examples.mjs"
   },
   "dependencies": {
     "@easy-player/plugin-sdk": "file:vendor/easy-player-plugin-sdk-2.0.0.tgz",
@@ -16,10 +18,13 @@
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
     "@types/node": "^22.19.1",
+    "@vue/compiler-sfc": "3.5.39",
     "adm-zip": "^0.6.0",
+    "ajv": "8.20.0",
     "esbuild": "0.25.12",
     "supports-color": "7.2.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vue": "3.5.39"
   },
   "repository": {
     "type": "git",

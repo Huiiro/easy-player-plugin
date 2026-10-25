@@ -1,0 +1,15 @@
+{
+  "id": "example.midnight",
+  "displayName": "Midnight",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Midnight",
+    "names": {
+      "zh": "午夜",
+      "en": "Midnight"
+    }
+  }
+}

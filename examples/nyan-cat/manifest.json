@@ -1,0 +1,19 @@
+{
+  "id": "example.nyan-cat",
+  "displayName": "Nyan Cat · 彩虹糖星球",
+  "version": "1.0.1",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Nyan Cat · 彩虹糖星球",
+    "names": {
+      "zh": "Nyan Cat · 彩虹糖星球",
+      "en": "Nyan Cat · Rainbow Planet"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

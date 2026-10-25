@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "colorMode": "dark",
+  "accentColor": "oklch(0.69 0.105 83)",
+  "headerBackground": "rgb(15 13 9 / 0.86)",
+  "footerBackground": "rgb(21 18 12 / 0.88)",
+  "chromeBorder": "rgb(177 140 66 / 0.28)",
+  "background": "radial-gradient(circle at 50% 50%, #04040a 0 12%, transparent 12.8%), radial-gradient(ellipse at 50% 50%, transparent 17%, #e8b780 19%, #805034 22%, transparent 34%), radial-gradient(circle at 50% 50%, transparent 13%, #e0ad79 14%, #332336 18%, transparent 36%), #090914",
+  "shader": {
+    "fragment": "fragment.glsl",
+    "textures": [
+      {
+        "uniform": "u_paths",
+        "path": "paths.bin",
+        "width": 1024,
+        "height": 384,
+        "format": "rg32f"
+      },
+      {
+        "uniform": "u_ends",
+        "path": "ends.bin",
+        "width": 1024,
+        "height": 1,
+        "format": "rg32f"
+      }
+    ]
+  },
+  "tokens": {
+    "--color-bg": "rgb(13 12 9)",
+    "--color-bg-l": "rgb(25 22 16)",
+    "--color-bg-l2": "rgb(36 31 21)",
+    "--color-bg-d": "rgb(7 6 5)",
+    "--color-border": "rgb(162 133 77 / 0.4)",
+    "--color-border-l": "rgb(205 172 102 / 0.6)",
+    "--color-hover": "rgb(191 156 80 / 0.1)",
+    "--color-hover-bg": "rgb(167 132 59 / 0.18)",
+    "--color-icon": "rgb(230 215 180)",
+    "--color-icon-l": "rgb(175 157 119)",
+    "--scrollbar-thumb": "rgb(159 128 63 / 0.45)",
+    "--scrollbar-thumb-hover": "rgb(199 164 83 / 0.68)"
+  }
+}

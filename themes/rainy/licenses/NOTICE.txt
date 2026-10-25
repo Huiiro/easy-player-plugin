@@ -1,0 +1,13 @@
+Rainy Evening / Easy Player theme plugin
+
+Rain shader provenance retained from the previous host implementation:
+Adapted from the user's local rainy_window_shader_adapted.html.
+Rain functions originate from Heartfelt, Martijn Steinrucken (BigWings), 2017.
+https://www.shadertoy.com/view/ltffzl
+Original shader license recorded in the host source: CC BY-NC-SA 3.0.
+The image sizing expression is adapted to WebGL 2 textureSize; rain sampling,
+refraction, focus and post-processing are preserved.
+
+Street image copied unchanged from Easy Player's existing asset:
+src/renderer/src/assets/img/rainy-night-cool.webp.
+This notice does not grant additional rights to the image or upstream shader.

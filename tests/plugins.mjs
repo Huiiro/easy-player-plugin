@@ -87,8 +87,8 @@ const context = (operation) => ({
   signal: new AbortController().signal
 })
 test('all five independently bundled archives activate against only the public SDK', () => {
-  assert.equal(catalog.plugins.length, 5)
-  for (const entry of catalog.plugins) {
+  assert.equal(catalog.plugins.filter(entry => entry.kind !== 'theme').length, 5)
+  for (const entry of catalog.plugins.filter(entry => entry.kind !== 'theme')) {
     const filename = new URL(entry.url).pathname.split('/').at(-1)
     const bytes = readFileSync(path.join(root, 'dist', filename))
     assert.equal(bytes.length, entry.size)

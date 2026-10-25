@@ -1,4 +1,4 @@
-name: Publish official source plugins
+name: Publish official plugins
 
 on:
   workflow_dispatch:
@@ -26,6 +26,7 @@ jobs:
       - name: Verify reproducible plugin catalog
         run: git diff --exit-code -- catalog.json
       - run: npm test
+      - run: npm run build:examples
       - name: Publish to the official repository
         env:
           GH_TOKEN: ${{ secrets.PLUGIN_RELEASE_TOKEN || github.token }}
@@ -34,7 +35,7 @@ jobs:
           repo=$(node -p "require('./distribution.json').repository")
           tag=$(node -p "require('./distribution.json').releaseTag")
           if ! gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
-            gh release create "$tag" --repo "$repo" --title 'Official source plugins' --notes 'Optional source plugins for Easy Player. Install them from Settings → Plugins.' --latest=false
+            gh release create "$tag" --repo "$repo" --title 'Official plugins' --notes 'Optional source and theme plugins for Easy Player. Install them from Settings → Plugins.' --latest=false
           fi
-          gh release upload "$tag" --repo "$repo" dist/*.epp --clobber
+          gh release upload "$tag" --repo "$repo" dist/*.epp dist/examples/*.epp --clobber
           gh release upload "$tag" --repo "$repo" dist/catalog.json --clobber

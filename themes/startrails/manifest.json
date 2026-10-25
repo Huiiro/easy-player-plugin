@@ -1,0 +1,19 @@
+{
+  "id": "builtin.theme.startrails",
+  "displayName": "Star Trails",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Star Trails",
+    "names": {
+      "zh": "星轨",
+      "en": "Star Trails"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

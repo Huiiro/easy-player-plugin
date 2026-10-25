@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "colorMode": "dark",
+  "accentColor": "oklch(0.75 0.09 233)",
+  "headerBackground": "rgb(12 23 35 / 0.87)",
+  "footerBackground": "rgb(9 19 30 / 0.9)",
+  "chromeBorder": "rgb(139 179 205 / 0.24)",
+  "background": "radial-gradient(circle at 27% 68%, rgb(255 191 100 / 75%), transparent 29%), radial-gradient(circle at 73% 43%, rgb(246 155 92 / 58%), transparent 25%), linear-gradient(150deg, #423448, #17273b 58%, #111923)",
+  "tokens": {
+    "--color-bg": "rgb(9 19 31)",
+    "--color-bg-l": "rgb(19 34 48)",
+    "--color-bg-l2": "rgb(29 46 61)",
+    "--color-bg-d": "rgb(5 12 22)",
+    "--color-border": "rgb(139 179 205 / 0.28)",
+    "--color-border-l": "rgb(181 211 227 / 0.42)",
+    "--color-hover": "rgb(142 190 217 / 0.09)",
+    "--color-hover-bg": "rgb(102 155 188 / 0.17)",
+    "--color-icon": "rgb(218 234 244)",
+    "--color-icon-l": "rgb(147 180 201)",
+    "--scrollbar-thumb": "rgb(112 157 186 / 0.44)",
+    "--scrollbar-thumb-hover": "rgb(159 202 225 / 0.66)",
+    "--ep-background-scrim": "color-mix(in srgb, var(--color-bg) 48%, transparent)",
+    "--ep-background-image-overlay": "linear-gradient(rgb(10 20 34 / 16%), rgb(5 13 24 / 30%))"
+  },
+  "assets": {
+    "resources": {
+      "street": {
+        "type": "image",
+        "path": "images/rainy-night-cool.webp"
+      }
+    },
+    "slots": {
+      "appBackground": {
+        "image": "street"
+      }
+    }
+  },
+  "shader": {
+    "fragment": "fragment.glsl",
+    "fps": 24,
+    "textures": [
+      {
+        "uniform": "u_image",
+        "path": "images/rainy-night-cool.webp",
+        "width": 1672,
+        "height": 941,
+        "format": "image"
+      }
+    ]
+  }
+}

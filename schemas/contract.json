@@ -1,0 +1,10 @@
+{
+  "sdk": "@easy-player/plugin-sdk",
+  "sdkVersion": "2.1.0",
+  "pluginApiVersion": 2,
+  "themeFormatVersion": 1,
+  "sha256": {
+    "theme-plugin-manifest.schema.json": "5ec236d99e876ed58e5116abe3bd69b92116428144f85dd5240ca01cf47729c7",
+    "theme.schema.json": "454eaa7ffbe90da5f1d53fc0da27361bdba3cbbe674075a07d1b459ce6ad4f8f"
+  }
+}

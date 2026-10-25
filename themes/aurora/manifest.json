@@ -1,0 +1,19 @@
+{
+  "id": "builtin.theme.aurora",
+  "displayName": "Aurora",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Aurora",
+    "names": {
+      "zh": "极光",
+      "en": "Aurora"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

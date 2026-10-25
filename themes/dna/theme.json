@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "colorMode": "dark",
+  "accentColor": "oklch(0.76 0.10 184)",
+  "headerBackground": "rgb(9 22 29 / 0.88)",
+  "footerBackground": "rgb(9 22 29 / 0.92)",
+  "chromeBorder": "rgb(135 204 198 / 0.20)",
+  "background": "radial-gradient(ellipse 38% 80% at 50% 45%, rgb(39 88 91 / 24%), transparent 80%), radial-gradient(ellipse 40% 48% at 8% 30%, rgb(39 87 99 / 24%), transparent 85%), radial-gradient(ellipse 42% 55% at 92% 72%, rgb(72 62 105 / 24%), transparent 85%), radial-gradient(ellipse 55% 35% at 22% 100%, rgb(48 61 89 / 18%), transparent 85%), linear-gradient(145deg, #08121a, #0c1a23 60%, #09131e)",
+  "tokens": {
+    "--color-bg": "rgb(8 18 26)",
+    "--color-bg-l": "rgb(17 32 40)",
+    "--color-bg-l2": "rgb(26 44 52)",
+    "--color-bg-d": "rgb(5 12 19)",
+    "--color-border": "rgb(132 188 187 / 0.28)",
+    "--color-border-l": "rgb(173 218 212 / 0.44)",
+    "--color-hover": "rgb(140 216 205 / 0.09)",
+    "--color-hover-bg": "rgb(100 180 173 / 0.17)",
+    "--color-icon": "rgb(218 239 236)",
+    "--color-icon-l": "rgb(148 187 187)",
+    "--scrollbar-thumb": "rgb(112 171 168 / 0.44)",
+    "--scrollbar-thumb-hover": "rgb(158 208 202 / 0.66)",
+    "--ep-background-scrim": "linear-gradient( 90deg, rgb(8 18 26 / 24%), rgb(8 18 26 / 18%) 50%, rgb(8 18 26 / 24%) )"
+  },
+  "renderer": {
+    "entry": "background.js"
+  }
+}

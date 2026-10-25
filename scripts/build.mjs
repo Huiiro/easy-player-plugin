@@ -1,3 +1,4 @@
+import { buildThemes } from './build-themes.mjs'
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { build } from 'esbuild'
 import AdmZip from 'adm-zip'
@@ -170,13 +171,23 @@ exports.${method} = (data = {}) => ${method}Module({ ...data, cookie: typeof dat
   })
   console.log(`${manifest.displayName}: ${filename} (${Math.round(bytes.length / 1024)} KiB)`)
 }
+for (const { filename, ...entry } of await buildThemes(root, output)) {
+  generated.add(filename)
+  catalog.plugins.push({
+    ...entry,
+    url: `https://github.com/${distribution.repository}/releases/download/${distribution.releaseTag}/${filename}`
+  })
+  console.log(entry.displayName + ': ' + filename)
+}
 writeFileSync(path.join(output, 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n')
 writeFileSync(path.join(root, 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n')
 for (const file of readdirSync(output, { withFileTypes: true })) {
   if (
     !file.isFile() ||
     generated.has(file.name) ||
-    !/^builtin\.(netease|kugou|qqmusic|bili|youtube)-[a-zA-Z0-9.-]+\.epp$/.test(file.name)
+    !/^builtin\.(netease|kugou|qqmusic|bili|youtube|theme\.(?:blackhole|rainy|aurora|ocean|sunset|forest|matrix|starfield|startrails|dna))-[a-zA-Z0-9.-]+\.epp$/.test(
+      file.name
+    )
   )
     continue
   const target = path.resolve(output, file.name)

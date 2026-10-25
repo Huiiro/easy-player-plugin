@@ -4,3 +4,11 @@ dist/
 .idea/
 .vscode/
 .DS_Store
+themes/blackhole/*.bin
+themes/blackhole/fragment.glsl
+
+themes/rainy/fragment.glsl
+
+themes/*/background.js
+
+themes/*/licenses/renderer-dependencies.txt

@@ -1,0 +1,19 @@
+{
+  "id": "builtin.theme.blackhole",
+  "displayName": "Black Hole",
+  "version": "1.0.1",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Black Hole",
+    "names": {
+      "zh": "黑洞",
+      "en": "Black Hole"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

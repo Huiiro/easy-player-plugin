@@ -1,0 +1,19 @@
+{
+  "id": "builtin.theme.rainy",
+  "displayName": "Rainy Evening",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "Rainy Evening",
+    "names": {
+      "zh": "雨夜街景",
+      "en": "Rainy Evening"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

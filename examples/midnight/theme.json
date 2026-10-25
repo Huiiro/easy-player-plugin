@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "colorMode": "dark",
+  "accentColor": "#a5b4fc",
+  "headerBackground": "#14152b",
+  "footerBackground": "#101122",
+  "chromeBorder": "#34365a",
+  "background": "radial-gradient(ellipse at 30% 20%, #282950, #0d0e1c)",
+  "tokens": {
+    "--color-bg": "#101122",
+    "--color-bg-l": "#181a31",
+    "--color-bg-l2": "#22243f",
+    "--color-text": "#edf0ff",
+    "--color-text-l": "#b8bddb"
+  }
+}

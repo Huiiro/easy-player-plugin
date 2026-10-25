@@ -1,0 +1,19 @@
+{
+  "id": "builtin.theme.dna",
+  "displayName": "DNA Double Helix",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "sources": [],
+  "kind": "theme",
+  "theme": {
+    "displayName": "DNA Double Helix",
+    "names": {
+      "zh": "DNA 双螺旋",
+      "en": "DNA Double Helix"
+    }
+  },
+  "author": {
+    "name": "Easy Player",
+    "url": "https://github.com/Huiiro/easy-player-plugin"
+  }
+}

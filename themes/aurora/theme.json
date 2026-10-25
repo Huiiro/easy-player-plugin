@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "colorMode": "dark",
+  "accentColor": "oklch(0.79 0.16 164)",
+  "headerBackground": "rgb(10 39 42 / 0.84)",
+  "footerBackground": "rgb(13 45 48 / 0.86)",
+  "chromeBorder": "rgb(109 241 201 / 0.26)",
+  "background": "radial-gradient(circle at 12% 14%, #56debc, transparent 37%), radial-gradient(circle at 84% 22%, #5b74ff, transparent 42%), #172345",
+  "tokens": {
+    "--color-bg": "rgb(5 27 31)",
+    "--color-bg-l": "rgb(14 49 52)",
+    "--color-bg-l2": "rgb(21 62 64)",
+    "--color-bg-d": "rgb(3 18 22)",
+    "--color-border": "rgb(113 218 197 / 0.52)",
+    "--color-border-l": "rgb(154 245 223 / 0.7)",
+    "--color-hover": "rgb(144 255 222 / 0.12)",
+    "--color-hover-bg": "rgb(104 224 195 / 0.19)",
+    "--color-icon": "rgb(209 252 239)",
+    "--color-icon-l": "rgb(143 207 195)",
+    "--scrollbar-thumb": "rgb(110 215 193 / 0.45)",
+    "--scrollbar-thumb-hover": "rgb(146 245 219 / 0.7)",
+    "--ep-background-scrim": "color-mix(in srgb, var(--color-bg) 32%, transparent)"
+  },
+  "renderer": {
+    "entry": "background.js"
+  }
+}
