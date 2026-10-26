@@ -2,7 +2,7 @@ import type { SourceCallContext } from '@easy-player/plugin-sdk'
 import { SourceCallError } from '@easy-player/plugin-sdk'
 import { cleanNetworkLyric, normalizeKrc } from '../../shared/lyricNormalizer'
 import type { LyricSearchRequest, ProviderLyricCandidate } from '@easy-player/plugin-sdk'
-import { searchKeyword } from '../../shared/lyricUtils'
+import { isRelatedTitle, searchKeyword } from '../../shared/lyricUtils'
 import {
   KUGOU_PUBLIC_COOKIE,
   record,
@@ -14,6 +14,22 @@ import {
   fetchKugouTrack,
   type KugouRecord
 } from './shared'
+
+function lyricTitle(song: KugouRecord): string {
+  const title = trackTitle(song)
+  const original =
+    text(record(song.base).songname) ||
+    text(song.OriSongName) ||
+    text(song.SongName) ||
+    text(record(song.extra).ori_audio_name)
+  if (!original || isRelatedTitle(title, original)) return title
+  // Catalog suffixes also contain translated names (e.g. 花之塔 / Tower of Flower).
+  // Use the original name for lyric identity, retaining recording-version notes.
+  const note = title.startsWith(original) ? title.slice(original.length) : title
+  const recordingNote =
+    /\bpiano\b|\b(?:sped|speed)\s*up\b|\bslowed\b|\b(?:tv|full)\s*(?:size\b|サイズ)|\b(?:demo|karaoke|mono|stereo)\b|演唱会|混音|不插电|钢琴|女声|男声|加速|降速|慢速|カラオケ|アコースティック|バージョン|ライブ/iu
+  return recordingNote.test(note) ? title : original
+}
 
 async function fetchKugouLyric(
   song: KugouRecord,
@@ -61,7 +77,7 @@ async function fetchKugouLyric(
   return {
     id: 'kugou:' + String(match.id) + ':' + format,
     resourceId: albumAudioId ? trackId(albumAudioId) : hash,
-    title: trackTitle(song) || text(match.song),
+    title: lyricTitle(song) || text(match.song),
     artist:
       text(base.author_name) ||
       artistNames(song.Singers) ||

@@ -32,7 +32,7 @@
         "name": "Easy Player",
         "url": "https://github.com/Huiiro/easy-player-plugin"
       },
-      "version": "1.1.1",
+      "version": "1.1.2",
       "apiVersion": 2,
       "sources": [
         {
@@ -45,9 +45,9 @@
           ]
         }
       ],
-      "size": 320494,
-      "sha256": "1aa735bd879a18e68744d0b54539ed54a8ab4578cb09a198e70235a6a298bc9e",
-      "url": "https://github.com/Huiiro/easy-player-plugin/releases/download/plugins/builtin.kugou-1.1.1-1aa735bd879a.epp"
+      "size": 321230,
+      "sha256": "bca1a23fd0f1d5009361999b0a8a54d16b6ef3389f5a94850ab7657f6dc99fec",
+      "url": "https://github.com/Huiiro/easy-player-plugin/releases/download/plugins/builtin.kugou-1.1.2-bca1a23fd0f1.epp"
     },
     {
       "id": "builtin.qqmusic",

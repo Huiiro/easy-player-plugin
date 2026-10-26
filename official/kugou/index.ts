@@ -13,6 +13,6 @@ export const kugouPlugin = defineSourcePlugin(
     metadata: { search: searchKugouTracks, get: getKugouTrack },
     artwork: { search: searchKugouArtwork }
   }),
-  '1.1.1',
+  '1.1.2',
   officialPluginAuthor
 )

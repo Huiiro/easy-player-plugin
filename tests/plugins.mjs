@@ -263,3 +263,88 @@ test('NetEase and Kugou preserve track identities and field normalization', asyn
   assert.equal(kugou[0].title, 'Title (Live)')
   assert.equal(kugou[0].durationMs, 123000)
 })
+
+test('Kugou lyrics match original titles without catalog translations, retaining recording versions', async () => {
+  let rows = []
+  const load = loader({
+    kugoumusicapi: {
+      search: async () => ({ status: 200, body: { status: 1, data: { lists: rows } } }),
+      search_lyric: async () => ({
+        status: 200,
+        body: { status: 200, candidates: [{ id: 'fixture', accesskey: 'key' }] }
+      }),
+      lyric: async () => ({
+        status: 200,
+        body: { status: 200, decodeContent: '[1000,500]<0,500,0>Fixture' }
+      })
+    }
+  })
+  const lyrics = load('official/kugou/lyrics.ts')
+  const metadata = load('official/kugou/metadata.ts')
+  for (const suffix of ['(花之塔)', '(Tower of Flower)']) {
+    rows = [
+      {
+        MixSongID: '423788044',
+        FileHash: 'A'.repeat(32),
+        OriSongName: '花の塔',
+        Suffix: suffix,
+        SingerName: '酸欠少女さユり'
+      }
+    ]
+    const candidates = await lyrics.searchKugouLyrics(
+      { title: '花の塔', artist: '酸欠少女さユり' },
+      true
+    )
+    assert.equal(candidates[0].title, '花の塔')
+    assert.equal(candidates[0].artist, '酸欠少女さユり')
+    assert.equal(candidates[0].format, 'krc')
+    assert.equal(
+      (await metadata.searchKugouTracks('花の塔'))[0].title,
+      '花の塔 ' + suffix,
+      'metadata retains the display suffix'
+    )
+  }
+  rows = [
+    { MixSongID: '1', FileHash: 'A'.repeat(32), SongName: '花の塔 (花之塔)', OriSongName: '花の塔' }
+  ]
+  assert.equal((await lyrics.searchKugouLyrics({ title: '花の塔' }, true))[0].title, '花の塔')
+  for (const suffix of [
+    'Live',
+    'Instrumental',
+    'Acoustic',
+    'Remix',
+    'Cover',
+    'Piano',
+    '女声',
+    '男声',
+    '加速',
+    'Slowed',
+    'TV Size',
+    'TVサイズ',
+    'Demo',
+    'ライブ'
+  ]) {
+    rows = [
+      { MixSongID: '1', FileHash: 'A'.repeat(32), OriSongName: 'Song', Suffix: '(' + suffix + ')' }
+    ]
+    assert.equal(
+      (await lyrics.searchKugouLyrics({ title: 'Song' }, true))[0].title,
+      'Song (' + suffix + ')',
+      'do not turn a recording version into the studio song'
+    )
+  }
+  rows = [
+    {
+      MixSongID: '2',
+      FileHash: 'B'.repeat(32),
+      OriSongName: 'ミカヅキ',
+      Suffix: '(新月)',
+      SingerName: '酸欠少女さユり'
+    }
+  ]
+  assert.equal(
+    (await lyrics.searchKugouLyrics({ title: '花の塔' }, true))[0].title,
+    'ミカヅキ',
+    'never substitute the requested title for an unrelated result'
+  )
+})
