@@ -18,6 +18,6 @@ export const neteasePlugin = defineSourcePlugin(
     metadata: { search: searchNeteaseTracks, get: getNeteaseTrack },
     artwork: { search: searchNeteaseArtwork }
   }),
-  '1.1.1',
+  '1.1.2',
   officialPluginAuthor
 )

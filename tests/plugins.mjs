@@ -209,6 +209,8 @@ function loader(mocks) {
         URLSearchParams,
         AbortController,
         AbortSignal,
+        setTimeout,
+        clearTimeout,
         fetch,
         require(name) {
           if (mocks[name]) return mocks[name]
@@ -347,4 +349,175 @@ test('Kugou lyrics match original titles without catalog translations, retaining
     'ミカヅキ',
     'never substitute the requested title for an unrelated result'
   )
+})
+
+test('NetEase resolves declared title and artist aliases and retrieves LRC when YRC exists alone', async () => {
+  let row = {
+    id: 1,
+    name: 'Original song',
+    transNames: ['Translated song'],
+    artists: [{ id: 771, name: 'Original singer', alias: [] }]
+  }
+  let legacyCalls = 0,
+    artistCalls = 0,
+    code = 200
+  const load = loader({
+    '@neteasecloudmusicapienhanced/api': {
+      search: async () => ({ status: 200, body: { code, result: { songs: [row] } } }),
+      artist_detail: async ({ id }) => {
+        artistCalls++
+        return {
+          status: 200,
+          body: {
+            code: 200,
+            data: {
+              artist: { id: Number(id), name: 'Original singer', alias: ['Translated singer'] }
+            }
+          }
+        }
+      },
+      lyric_new: async () => ({
+        status: 200,
+        body: { code: 200, yrc: { lyric: '[1000,500](1000,500,0)Fixture' } }
+      }),
+      lyric: async () => {
+        legacyCalls++
+        return { status: 200, body: { code: 200, lrc: { lyric: '[00:01.00]Fixture' } } }
+      }
+    }
+  })
+  const lyrics = load('official/netease/lyrics.ts')
+  const query = { title: 'Translated song', artist: 'Translated singer' }
+  const result = await lyrics.searchNeteaseLyrics(query, false)
+  assert.equal(result[0].title, query.title)
+  assert.equal(result[0].artist, query.artist)
+  assert.equal(result[0].format, 'lrc')
+  assert.equal(legacyCalls, 1, 'YRC availability must not prevent the requested LRC fallback')
+  assert.equal(artistCalls, 1)
+  assert.equal((await lyrics.searchNeteaseLyrics(query, true))[0].format, 'yrc')
+  assert.equal(artistCalls, 1, 'public artist identity is cached')
+  assert.equal(
+    (await lyrics.searchNeteaseLyrics({ ...query, title: 'Unknown song' }, false)).length,
+    0
+  )
+  row = { ...row, name: 'Original song (Live)' }
+  assert.equal(
+    (await lyrics.searchNeteaseLyrics(query, false))[0].title,
+    'Translated song (Live)',
+    'an alias cannot hide the recording version'
+  )
+  code = 403
+  for (const search of [
+    () => lyrics.searchNeteaseLyrics(query, false),
+    () => load('official/netease/metadata.ts').searchNeteaseTracks(query.title),
+    () => load('official/netease/artwork.ts').searchNeteaseArtwork(query)
+  ])
+    await assert.rejects(
+      search,
+      (error) => error.status === 403,
+      'a provider rejection is not an empty search'
+    )
+})
+
+test('QQ lyric identity separates display names, declared aliases and recording subtitles', async () => {
+  let row = {
+    mid: '000StudioSong1',
+    id: 1,
+    title: 'Original song (Display translation)',
+    name: 'Original song',
+    alias: ['Translated song'],
+    subtitle: '',
+    singer: [{ name: 'Original singer', alias: ['Translated singer'] }]
+  }
+  const transport = async (_url, init) => ({
+    ok: true,
+    text: async () =>
+      JSON.stringify(
+        init.body
+          ? { code: 0, req_1: { code: 0, data: { body: { song: { list: [row] } } } } }
+          : { code: 0, lyric: '[00:01.00]Fixture' }
+      )
+  })
+  const load = loader({})
+  const lyrics = load('official/qqmusic/lyrics.ts')
+  const context = {
+    signal: new AbortController().signal,
+    deadline: Date.now() + 10000,
+    operation: 'lyrics.search',
+    host: { network: { fetch: transport } }
+  }
+  const query = { title: 'Original song', artist: 'Translated singer' }
+  let result = await lyrics.searchQQMusicLyrics(query, false, context)
+  assert.equal(result[0].title, query.title)
+  assert.equal(result[0].artist, query.artist)
+  result = await lyrics.searchQQMusicLyrics({ ...query, title: 'Translated song' }, false, context)
+  assert.equal(result[0].title, 'Translated song')
+  row = { ...row, subtitle: 'Live' }
+  assert.equal(
+    (await lyrics.searchQQMusicLyrics({ ...query, title: 'Translated song' }, false, context))[0]
+      .title,
+    'Translated song (Live)'
+  )
+  row = { ...row, subtitle: '', singer: [] }
+  assert.equal(
+    (await lyrics.searchQQMusicLyrics(query, false, context))[0].artist,
+    '',
+    'missing singers must not be filled with the requested singer'
+  )
+  assert.equal(
+    (await lyrics.searchQQMusicLyrics({ ...query, title: 'Unrelated title' }, false, context))
+      .length,
+    0
+  )
+})
+
+test('optional artist enrichment verifies IDs and never replaces a canonical name on failure', async () => {
+  const load = loader({}),
+    artists = load('official/netease/artists.ts')
+  const row = [{ id: 772, name: 'Original singer', aliases: [] }]
+  const result = await artists.resolveNeteaseArtists(
+    row,
+    'Translated singer',
+    async () => ({
+      status: 200,
+      body: { code: 200, data: { artist: { id: 999, alias: ['Translated singer'] } } }
+    }),
+    new Set()
+  )
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(result)),
+    row,
+    'a different artist ID cannot supply aliases'
+  )
+  const failure = await artists.resolveNeteaseArtists(
+    row,
+    'Translated singer',
+    async () => {
+      throw new Error('optional lookup failed')
+    },
+    new Set()
+  )
+  assert.deepEqual(JSON.parse(JSON.stringify(failure)), row)
+})
+
+test('NetEase lyric denials do not become empty results or retry a denied endpoint', async () => {
+  let legacy = 0
+  const load = loader({
+    '@neteasecloudmusicapienhanced/api': {
+      search: async () => ({
+        status: 200,
+        body: { code: 200, result: { songs: [{ id: 1, name: 'Song' }] } }
+      }),
+      lyric_new: async () => ({ status: 200, body: { code: 403 } }),
+      lyric: async () => {
+        legacy++
+        return { status: 200, body: { lrc: { lyric: '[00:01.00]Fixture' } } }
+      }
+    }
+  })
+  await assert.rejects(
+    load('official/netease/lyrics.ts').searchNeteaseLyrics({ title: 'Song' }, false),
+    (error) => error.status === 403
+  )
+  assert.equal(legacy, 0)
 })

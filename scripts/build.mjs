@@ -38,6 +38,7 @@ const sdkMethods = {
   '@neteasecloudmusicapienhanced/api': [
     'search',
     'song_detail',
+    'artist_detail',
     'album',
     'song_wiki_summary',
     'lyric',

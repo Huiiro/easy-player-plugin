@@ -13,6 +13,6 @@ export const qqmusicPlugin = defineSourcePlugin(
     metadata: { search: searchQQMusicTracks, get: getQQMusicTrack },
     artwork: { search: searchQQMusicArtwork }
   }),
-  '1.1.1',
+  '1.1.2',
   officialPluginAuthor
 )

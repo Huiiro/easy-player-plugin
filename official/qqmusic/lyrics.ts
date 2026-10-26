@@ -2,6 +2,7 @@ import type { SourceCallContext } from '@easy-player/plugin-sdk'
 import { cleanNetworkLyric } from '../../shared/lyricNormalizer'
 import type { LyricSearchRequest, ProviderLyricCandidate } from '@easy-player/plugin-sdk'
 import { isRelatedTitle, searchKeyword } from '../../shared/lyricUtils'
+import { lyricAliases, lyricArtists, lyricTitle } from '../../shared/lyricIdentity'
 import { decodeQQMusicLyric, normalizeQQMusicTrack, qrcToYrc } from './qrc'
 
 import {
@@ -17,11 +18,22 @@ import {
   type QQRecord
 } from './shared'
 
+function lyricSongTitle(song: QQRecord, request?: LyricSearchRequest): string {
+  return lyricTitle(
+    songTitle(song),
+    text(song.name) || text(song.songname) || songTitle(song),
+    lyricAliases(song.alias, song.alia, song.transNames, song.tns),
+    text(song.subtitle),
+    request?.title,
+    request?.artist
+  )
+}
+
 async function fetchQQMusicLyric(
   song: QQRecord,
   wordTimed: boolean,
   context?: SourceCallContext,
-  fallback?: LyricSearchRequest
+  request?: LyricSearchRequest
 ): Promise<ProviderLyricCandidate | null> {
   context?.signal.throwIfAborted()
 
@@ -77,12 +89,18 @@ async function fetchQQMusicLyric(
   const decoded = decodeQQMusicLyric(result.lyric)
   const lrc = wordTimed ? qrcToYrc(decoded) : cleanNetworkLyric(decoded, 'lrc')
   if (!lrc) return null
-  const artist = Array.isArray(song.singer)
-    ? song.singer
-        .map((singer) => text(record(singer).name))
-        .filter(Boolean)
-        .join(' / ')
-    : ''
+  const artist = lyricArtists(
+    Array.isArray(song.singer)
+      ? song.singer.map((value) => {
+          const singer = record(value)
+          return {
+            name: text(singer.name),
+            aliases: lyricAliases(singer.alias, singer.alia, singer.transNames, singer.tns)
+          }
+        })
+      : [],
+    request?.artist
+  )
   const album = record(song.album)
   const translation = normalizeQQMusicTrack(result.trans)
   const romanization = normalizeQQMusicTrack(result.roma)
@@ -90,8 +108,8 @@ async function fetchQQMusicLyric(
   return {
     id: `qqmusic:${mid}:${format}`,
     resourceId: mid,
-    title: songTitle(song) || fallback?.title || '',
-    artist: artist || fallback?.artist || '',
+    title: lyricSongTitle(song, request),
+    artist,
     album: text(album.name) || text(album.title) || text(song.albumname) || undefined,
     lrc,
     format,
@@ -116,7 +134,7 @@ export async function searchQQMusicLyrics(
   const uniqueSongs = songs.filter((value) => {
     const song = record(value)
     const mid = text(song.mid) || text(song.songmid)
-    const title = songTitle(song)
+    const title = lyricSongTitle(song, request)
     if (!isRelatedTitle(title, request.title, request.artist)) return false
     if (!mid || seen.has(mid)) return false
     seen.add(mid)

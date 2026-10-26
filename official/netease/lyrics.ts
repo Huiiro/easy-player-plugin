@@ -2,6 +2,20 @@ import type { SourceCallContext } from '@easy-player/plugin-sdk'
 import { cleanNetworkLyric } from '../../shared/lyricNormalizer'
 import type { LyricSearchRequest, ProviderLyricCandidate } from '@easy-player/plugin-sdk'
 import { isRelatedTitle } from '../../shared/lyricUtils'
+import { lyricAliases, lyricArtists, lyricTitle } from '../../shared/lyricIdentity'
+import { requireNeteaseSuccess } from './response'
+import { resolveNeteaseArtists } from './artists'
+
+function songTitle(song: Record<string, unknown>, request?: LyricSearchRequest): string {
+  return lyricTitle(
+    String(song.name ?? ''),
+    undefined,
+    lyricAliases(song.alias, song.alia, song.tns, song.transNames),
+    '',
+    request?.title,
+    request?.artist
+  )
+}
 
 interface NeteaseLyricResponse {
   status?: number
@@ -22,6 +36,7 @@ export async function searchNeteaseLyrics(
 ): Promise<ProviderLyricCandidate[]> {
   context?.signal.throwIfAborted()
 
+  if (!request.title.trim()) return []
   const api = await import('@neteasecloudmusicapienhanced/api')
   const { search: searchNetease } = api.default ?? api
   context?.signal.throwIfAborted()
@@ -33,18 +48,17 @@ export async function searchNeteaseLyrics(
     status?: number
     body?: { result?: { songs?: Array<Record<string, unknown>> } }
   }
-  if (response.status !== 200)
-    throw Object.assign(new Error('NetEase lyrics search failed'), { status: response.status })
-  const songs = (response.body?.result?.songs ?? []).filter(
-    (song) =>
-      typeof song.name === 'string' && isRelatedTitle(song.name, request.title, request.artist)
+  requireNeteaseSuccess(response)
+  const songs = (response.body?.result?.songs ?? []).filter((song) =>
+    isRelatedTitle(songTitle(song, request), request.title, request.artist)
   )
   context?.signal.throwIfAborted()
+  const artistIds = new Set<string>()
   const candidates = await Promise.allSettled(
     songs.slice(0, 6).map(async (song): Promise<ProviderLyricCandidate | null> => {
       const id = song.id as string | number | undefined
       if (id === undefined) return null
-      return fetchNeteaseLyric(song, id, wordTimed, context)
+      return fetchNeteaseLyric(song, id, wordTimed, context, request, artistIds)
     })
   )
   context?.signal.throwIfAborted()
@@ -59,7 +73,9 @@ async function fetchNeteaseLyric(
   song: Record<string, unknown>,
   id: string | number,
   wordTimed: boolean,
-  context?: SourceCallContext
+  context?: SourceCallContext,
+  request?: LyricSearchRequest,
+  artistIds = new Set<string>()
 ): Promise<ProviderLyricCandidate | null> {
   context?.signal.throwIfAborted()
 
@@ -70,14 +86,18 @@ async function fetchNeteaseLyric(
   try {
     result = (await getNeteaseLyricNew({ id })) as NeteaseLyricResponse
     context?.signal.throwIfAborted()
+    requireNeteaseSuccess(result)
     const hasYrc = /^\[\d+,\d+\].*\(\d+,\d+,\d+\)/m.test(result.body?.yrc?.lyric ?? '')
     const hasLrc = /^\[\d+:\d/m.test(result.body?.lrc?.lyric ?? '')
-    if (result.status !== 200 || (!hasYrc && !hasLrc)) {
+    const usable = wordTimed ? hasYrc || hasLrc : hasLrc
+    if (!usable) {
       context?.signal.throwIfAborted()
       result = (await getNeteaseLyric({ id })) as NeteaseLyricResponse
     }
-  } catch {
+  } catch (reason) {
     context?.signal.throwIfAborted()
+    if ([401, 403, 429].includes(Number((reason as { status?: number } | null)?.status)))
+      throw reason
     result = (await getNeteaseLyric({ id })) as NeteaseLyricResponse
   }
   context?.signal.throwIfAborted()
@@ -85,16 +105,27 @@ async function fetchNeteaseLyric(
   const yrc = yrcText && /^\[\d+,\d+\].*\(\d+,\d+,\d+\)/m.test(yrcText) ? yrcText : undefined
   const format = wordTimed ? 'yrc' : 'lrc'
   const lrc = cleanNetworkLyric(wordTimed ? yrc || '' : result.body?.lrc?.lyric || '', format)
-  if (result.status !== 200)
-    throw Object.assign(new Error('NetEase lyric request failed'), { status: result.status })
+  requireNeteaseSuccess(result)
   if (!lrc) return null
   const songArtists = song.artists ?? song.ar
-  const artists = Array.isArray(songArtists)
-    ? songArtists
-        .map((artist) => String((artist as { name?: string }).name ?? ''))
-        .filter(Boolean)
-        .join(' / ')
-    : ''
+  const sdk = api.default ?? api
+  const resolvedArtists = await resolveNeteaseArtists(
+    Array.isArray(songArtists)
+      ? songArtists.map((value) => {
+          const artist = value as Record<string, unknown>
+          return {
+            id: artist.id,
+            name: String(artist.name ?? ''),
+            aliases: lyricAliases(artist.alias, artist.alia, artist.tns, artist.transNames)
+          }
+        })
+      : [],
+    request?.artist,
+    typeof sdk.artist_detail === 'function' ? (id) => sdk.artist_detail({ id }) : undefined,
+    artistIds,
+    context
+  )
+  const artists = lyricArtists(resolvedArtists, request?.artist)
   const album = ((song.album ?? song.al) as { name?: string } | undefined)?.name
   const translation = cleanNetworkLyric(
     (wordTimed
@@ -111,7 +142,7 @@ async function fetchNeteaseLyric(
   return {
     id: `netease:${id}:${format}`,
     resourceId: String(id),
-    title: String(song.name ?? ''),
+    title: songTitle(song, request),
     artist: artists || '',
     album,
     lrc,

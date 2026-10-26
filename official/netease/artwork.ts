@@ -1,3 +1,4 @@
+import { requireNeteaseSuccess } from './response'
 import type { SourceCallContext } from '@easy-player/plugin-sdk'
 import type { ArtworkCandidate, MetadataQuery } from '@easy-player/plugin-sdk'
 
@@ -19,8 +20,7 @@ export async function searchNeteaseArtwork(
     body?: { result?: { albums?: Array<Record<string, unknown>> } }
   }
   context?.signal.throwIfAborted()
-  if (response.status !== 200)
-    throw Object.assign(new Error('NetEase artwork search failed'), { status: response.status })
+  requireNeteaseSuccess(response)
   return (response.body?.result?.albums ?? []).flatMap((album) => {
     const imageUrl =
       typeof album.picUrl === 'string' ? album.picUrl.replace(/^http:\/\//i, 'https://') : ''

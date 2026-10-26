@@ -1,3 +1,4 @@
+import { requireNeteaseSuccess } from './response'
 import { joinMetadataValues } from '../../shared/metadataValues'
 import type { SourceTrackDetail, SourceTrackSummary } from '@easy-player/plugin-sdk'
 import type { SourceCallContext } from '@easy-player/plugin-sdk'
@@ -59,8 +60,7 @@ export async function searchNeteaseTracks(
   const response = await (api.default ?? api).search({ keywords: query.trim(), type: 1, limit: 20 })
   context?.signal.throwIfAborted()
 
-  if (response.status !== 200)
-    throw Object.assign(new Error('NetEase track search failed'), { status: response.status })
+  requireNeteaseSuccess(response)
   const songs = record(record(response.body).result).songs
   return (Array.isArray(songs) ? songs : []).flatMap((song) => {
     try {
