@@ -103,6 +103,28 @@ theme.json：
 
 `renderer` 及其 ready/paused/dispose 协议仍是认证官方主题的专用入口。第三方不能借用这些生命周期说明执行 JS/Vue/HTML。内部 `--_theme-*` 变量、背景层属性、Vue scoped 属性和 Tailwind 类不是主题接口。
 
+## Liquid Glass 光学材质
+
+支持此扩展的新版宿主可读取可选 glass 字段；API 2 / 主题格式 1 不变，不能只通过 API 版本判断宿主是否具备该能力。完整参数、范围、性能与降级约定见宿主的 [Liquid Glass 作者指南](https://github.com/Huiiro/easy-player-v4/blob/master/docs/theme-authoring.md#liquid-glass-折射扩展)。
+
+```json
+{
+  "glass": {
+    "selectors": [".ep-header", ".ep-footer", ".ep-dialog-panel"],
+    "blur": 0.5, "refraction": 14, "saturation": 1.03,
+    "thickness": 8, "ior": 1.5, "dispersion": 0.6,
+    "fresnel": 0.4, "highlight": 0.65, "lightAngle": 225,
+    "shadow": 0.2, "interactive": false
+  }
+}
+```
+
+selectors/blur/refraction/saturation 必填，其他字段可选。声明经 Schema 与宿主双重验证，不接受 SVG/XML、外部 URL 或插件脚本。宿主按面板真实几何生成光学图，以实时 DOM backdrop 执行 Snell 折射、RGB 色散、Schlick 菲涅尔反射和方向高光；CSS 提供软阴影。tokens/rules 继续管理染色、透明度与布局，glass 接管目标面板的 backdrop-filter。
+
+主题的明暗匹配、原生材质覆盖、启停与卸载作用范围不变。ResizeObserver 与 MutationObserver 管理面板几何和 Teleport 生命周期；默认固定光照；启用 interactive 后仅在当前玻璃内小幅响应指针，减少动态效果冻结跟随。无硬件加速或超出几何图预算时回退 CSS 模糊和阴影。SDK 2.1 Schema 已同步此扩展；只有新版宿主实现完整材质，旧宿主不会自动获得这些效果。
+
+固定光照路径将反射、高光与窄边棱彩烘焙为透明背景层，保留真实 DOM 背景折射。滚动、输入与拖动期间采用已缓存的单通道折射，180ms 无交互后恢复 RGB 分采样；彩色边光保持不变。普通歌曲行变化不重扫材质，不重复写入相同 CSS 或光照。性能基准由宿主的 npm run test:liquid-glass:perf 提供。
+
 ## 资源、插槽与旧主题迁移
 
 完整示例见 [examples/nyan-cat](examples/nyan-cat)。原资源清单的 `resources/slots/text/licenses` 原样放入新 theme.json 的 `assets` 对象；原 theme.json 的 `tokens/rules` 保留。原 `background: replace/inherit` 改由外观中的插件背景选择控制。
