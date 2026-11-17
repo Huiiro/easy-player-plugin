@@ -1,3 +1,4 @@
+import { searchNeteaseArtistArtwork } from './artistArtwork'
 import { defineSourcePlugin } from '@easy-player/plugin-sdk'
 import { officialPluginAuthor } from '../../shared/officialPluginAuthor'
 import { searchNeteaseTracks, getNeteaseTrack } from './metadata'
@@ -8,7 +9,7 @@ export const neteasePlugin = defineSourcePlugin(
   {
     id: 'netease',
     displayName: 'NetEase Cloud Music',
-    capabilities: ['lyrics', 'artwork', 'metadata']
+    capabilities: ['lyrics', 'artwork', 'artistArtwork', 'metadata']
   },
   () => ({
     id: 'netease',
@@ -16,8 +17,9 @@ export const neteasePlugin = defineSourcePlugin(
     apiVersion: 1,
     lyrics: { search: searchNeteaseLyrics, get: getNeteaseLyrics },
     metadata: { search: searchNeteaseTracks, get: getNeteaseTrack },
+    artistArtwork: { search: searchNeteaseArtistArtwork },
     artwork: { search: searchNeteaseArtwork }
   }),
-  '1.1.2',
+  '1.2.0',
   officialPluginAuthor
 )

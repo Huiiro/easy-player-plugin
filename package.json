@@ -6,11 +6,12 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "npm run typecheck && node scripts/build.mjs",
     "test": "node --test tests/*.mjs",
+    "verify:artist-artwork": "node scripts/verify-artist-artwork.mjs",
     "pack:theme": "node scripts/pack-theme.mjs",
     "build:examples": "node scripts/build-theme-examples.mjs"
   },
   "dependencies": {
-    "@easy-player/plugin-sdk": "file:vendor/easy-player-plugin-sdk-2.1.0.tgz",
+    "@easy-player/plugin-sdk": "file:vendor/easy-player-plugin-sdk-2.2.0.tgz",
     "@neteasecloudmusicapienhanced/api": "^4.29.17",
     "kugoumusicapi": "github:MakcRe/KuGouMusicApi",
     "qrc-decoder": "1.0.2"

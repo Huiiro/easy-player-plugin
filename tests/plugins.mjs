@@ -521,3 +521,105 @@ test('NetEase lyric denials do not become empty results or retry a denied endpoi
   )
   assert.equal(legacy, 0)
 })
+
+test('artist portrait adapters return artist resources and preserve canonical names', async () => {
+  const load = loader({
+    '@neteasecloudmusicapienhanced/api': {
+      search: async (query) => {
+        assert.equal(query.type, 100)
+        return {
+          status: 200,
+          body: {
+            code: 200,
+            result: {
+              artists: [
+                { id: 123, name: 'Canonical', picUrl: 'http://images.test/artist.jpg' },
+                { id: 456, name: 'No portrait' }
+              ]
+            }
+          }
+        }
+      }
+    },
+    kugoumusicapi: {
+      search: async (query) => {
+        assert.equal(query.type, 'author')
+        return {
+          status: 200,
+          body: {
+            status: 1,
+            data: {
+              lists: [
+                {
+                  AuthorId: 789,
+                  AuthorName: 'Canonical',
+                  Avatar: 'http://images.test/{size}/artist.jpg'
+                },
+                { AuthorId: 456, AuthorName: 'No portrait' }
+              ]
+            }
+          }
+        }
+      }
+    },
+    [/* QQ uses the existing canonical singer search facade. */ './shared']: null
+  })
+  const netease = await load('official/netease/artistArtwork.ts').searchNeteaseArtistArtwork(
+    'query'
+  )
+  const kugou = await load('official/kugou/artistArtwork.ts').searchKugouArtistArtwork('query')
+  for (const items of [netease, kugou]) {
+    assert.equal(items.length, 1)
+    assert.equal(items[0].name, 'Canonical')
+    assert.equal(items[0].resource.resourceType, 'artist')
+    assert(items[0].imageUrl.startsWith('https://'))
+  }
+  const qqContext = context('artistArtwork.search')
+  const original = host.network.fetch
+  host.network.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        code: 0,
+        req_1: {
+          code: 0,
+          data: {
+            body: {
+              song: {
+                list: [
+                  { singer: [{ mid: '000Canonical01', name: 'Canonical' }] },
+                  { singer: [{ mid: '000Canonical01', name: 'Canonical' }] }
+                ]
+              }
+            }
+          }
+        }
+      })
+    )
+  try {
+    const qq = await load('official/qqmusic/artistArtwork.ts').searchQQMusicArtistArtwork(
+      'query',
+      qqContext
+    )
+    assert.equal(qq.length, 1)
+    assert.equal(qq[0].name, 'Canonical')
+    assert.equal(qq[0].resource.resourceType, 'artist')
+    assert(qq[0].imageUrl.includes('T001R500x500'))
+  } finally {
+    host.network.fetch = original
+  }
+  const controller = new AbortController()
+  controller.abort(new Error('portrait cancelled'))
+  for (const [file, method] of [
+    ['netease', 'searchNeteaseArtistArtwork'],
+    ['kugou', 'searchKugouArtistArtwork'],
+    ['qqmusic', 'searchQQMusicArtistArtwork']
+  ]) {
+    await assert.rejects(
+      load(`official/${file}/artistArtwork.ts`)[method]('query', {
+        ...qqContext,
+        signal: controller.signal
+      }),
+      /portrait cancelled/
+    )
+  }
+})
